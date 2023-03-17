@@ -14,17 +14,19 @@ public:
 
     void SplitChild(long key) {}
     long GetNumOfKeys() { return oKeys.size(); }
-    long GetNumOfChildren() { return oNodes.size(); }
+    long GetNumOfChildren() { return oChildren.size(); }
 
-    void AddChild(Node* n) { oNodes.push_back(n); }
+    void AddChild(Node* n) { oChildren.push_back(n); }
 
     void SetLeaf() { oLeaf = true; }
     bool IsLeaf() { return oLeaf; }
 
     void InsertKey(long key);
+    long GetKey(long idx) { return oKeys.at(idx); }
+    Node* GetChild(long idx) { return oChildren.at(idx); }
     long FirstGreaterThan(long key);
 private:
-    vector<Node*> oNodes;
+    vector<Node*> oChildren;
     vector<long> oKeys;
     bool oLeaf{false};
 };

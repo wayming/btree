@@ -63,7 +63,19 @@ BTree::InsertIntoNotFull(Node* curr, long key)
     if (curr->IsLeaf()) {
         curr->InsertKey(key);
     } else {
+        // intermidiate node
         long idx = curr->FirstGreaterThan(key);
+        if (curr->GetNumOfKeys() >= 2 * oDegree - 1) {
+            curr->SplitChild(key);
+        }
+
+        if (key > curr->GetKey(idx)) {
+            // Insert into right subtree
+            InsertIntoNotFull(curr->GetChild(idx+1), key);
+        } else {
+            // Insert into left subtree
+            InsertIntoNotFull(curr->GetChild(idx), key);
+        }
     }
 
 }
