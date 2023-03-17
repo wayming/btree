@@ -22,6 +22,7 @@ public:
     bool IsLeaf() { return oLeaf; }
 
     void InsertKey(long key);
+    long FirstGreaterThan(long key);
 private:
     vector<Node*> oNodes;
     vector<long> oKeys;
@@ -41,7 +42,7 @@ public:
 
 private:
     void InsertIntoFull(long key);
-    void InsertIntoNotFull(long key);
+    void InsertIntoNotFull(Node* curr, long key);
     Node* oRoot;
     long oDegree;  
 };

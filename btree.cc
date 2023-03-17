@@ -22,6 +22,15 @@ Node::InsertKey(long key)
     *iter = key;
 }
 
+long
+Node::FirstGreaterThan(long key) {
+    long idx = 0;
+    while (key >= oKeys.at(idx)) {
+        idx++;
+    }
+
+    return idx;
+}
 
 BTree::BTree(long degree)
 {
@@ -38,7 +47,7 @@ BTree::Insert(long key)
         oRoot = newRoot;
         InsertIntoFull(key);
     } else {
-        InsertIntoNotFull(key);
+        InsertIntoNotFull(oRoot, key);
     }
 }
 
@@ -49,10 +58,12 @@ BTree::InsertIntoFull(long key)
 }
 
 void
-BTree::InsertIntoNotFull(long key)
+BTree::InsertIntoNotFull(Node* curr, long key)
 {
-    if (oRoot.IsLeaf()) {
-
+    if (curr->IsLeaf()) {
+        curr->InsertKey(key);
+    } else {
+        long idx = curr->FirstGreaterThan(key);
     }
 
 }
