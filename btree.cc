@@ -65,7 +65,7 @@ BTree::InsertIntoNotFull(Node* curr, long key)
     } else {
         // intermidiate node
         long idx = curr->FirstGreaterThan(key);
-        if (curr->GetNumOfKeys() >= 2 * oDegree - 1) {
+        if (curr->GetChild(idx)->GetNumOfKeys() >= 2 * oDegree - 1) {
             curr->SplitChild(key);
         }
 
