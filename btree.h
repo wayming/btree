@@ -5,14 +5,15 @@ using namespace std;
 
 class Node {
 public:
-    Node() = default;
+    Node(long degree) : oDegree(degree) {};
+    Node(long degree, vector<long> keys, vector<Node*> children);
     ~Node() = default;
     Node(const Node& n) = delete;
     Node(Node&& n) = delete;
     Node& operator =(const Node& n) = delete;
     Node& operator =(Node&& n) = delete;
 
-    void SplitChild(long key) {}
+    void SplitChild(long key);
     long GetNumOfKeys() { return oKeys.size(); }
     long GetNumOfChildren() { return oChildren.size(); }
 
@@ -24,11 +25,22 @@ public:
     void InsertKey(long key);
     long GetKey(long idx) { return oKeys.at(idx); }
     Node* GetChild(long idx) { return oChildren.at(idx); }
+    
+    vector<long> ChopKeys(long idx) { return SplitVector<long>(oKeys, idx); }
+    vector<Node*> ChopChildren(long idx) { return SplitVector<Node*>(oChildren, idx); }
     long FirstGreaterThan(long key);
 private:
+    // Erase the elements(start from the index). Return the erased elements.
+    template <class T>
+    vector<T> SplitVector(vector<T>& source, long idx) {
+        vector<T> remaining(source.begin()+idx, source.end());
+        source.erase(source.begin()+idx, source.end());
+        return remaining;
+    }
     vector<Node*> oChildren;
     vector<long> oKeys;
     bool oLeaf{false};
+    long oDegree;
 };
 
 class BTree {
