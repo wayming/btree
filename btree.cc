@@ -4,6 +4,29 @@
 
 using namespace std;
 
+Node::Node(long degree, vector<long> keys, vector<Node*> children)
+    : oDegree(degree), oKeys(keys), oChildren(children)
+{
+
+}
+
+
+void
+Node::SplitChild(long index)
+{
+    Node* childLeft = GetChild(index);
+
+    // Construct right child
+    vector<long> keys = childLeft->ChopKeys(index);
+    long parentKey = keys.front();
+    keys.erase(keys.begin());
+    vector<Node*> children = childLeft->ChopChildren(index);
+    Node* childRight = new Node(oDegree, move(keys), move(children));
+
+    InsertKey(parentKey);
+    oChildren.insert(oChildren.begin()+index+1, childRight);
+}
+
 void
 Node::InsertKey(long key)
 {
@@ -18,8 +41,7 @@ Node::InsertKey(long key)
         iter++;
     }
  
-    std::shift_right(iter, oKeys.end(), 1);
-    *iter = key;
+    oKeys.insert(iter, key);
 }
 
 long
@@ -34,15 +56,16 @@ Node::FirstGreaterThan(long key) {
 
 BTree::BTree(long degree)
 {
-    oRoot = new Node();
     oDegree = degree;
+    oRoot = new Node(oDegree);
 }
 
 void
 BTree::Insert(long key)
 {
     if (oRoot->GetNumOfKeys() >= 2 * oDegree - 1) {
-        Node* newRoot = new Node();
+        // New root
+        Node* newRoot = new Node(oDegree);
         newRoot->AddChild(oRoot);
         oRoot = newRoot;
         InsertIntoFull(key);
@@ -63,7 +86,7 @@ BTree::InsertIntoNotFull(Node* curr, long key)
     if (curr->IsLeaf()) {
         curr->InsertKey(key);
     } else {
-        // intermidiate node
+        // Intermidiate node
         long idx = curr->FirstGreaterThan(key);
         if (curr->GetChild(idx)->GetNumOfKeys() >= 2 * oDegree - 1) {
             curr->SplitChild(key);
