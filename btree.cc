@@ -1,6 +1,8 @@
 #include "btree.h"
 #include <algorithm>
 #include <utility>
+#include <sstream>
+#include <iterator>
 
 using namespace std;
 
@@ -9,7 +11,6 @@ Node::Node(long degree, vector<long> keys, vector<Node*> children)
 {
 
 }
-
 
 void
 Node::SplitChild(long index)
@@ -22,7 +23,7 @@ Node::SplitChild(long index)
     keys.erase(keys.begin());
     vector<Node*> children = childLeft->ChopChildren(index);
     Node* childRight = new Node(oDegree, move(keys), move(children));
-
+    childRight->IsLeaf(childLeft->IsLeaf());
     InsertKey(parentKey);
     oChildren.insert(oChildren.begin()+index+1, childRight);
 }
@@ -67,7 +68,8 @@ Node::InsertKey(long key)
 }
 
 long
-Node::FirstGreaterThan(long key) {
+Node::FirstGreaterThan(long key)
+{
     long idx = 0;
     while (key >= oKeys.at(idx)) {
         idx++;
@@ -76,10 +78,35 @@ Node::FirstGreaterThan(long key) {
     return idx;
 }
 
+vector<string>
+Node::Dump()
+{
+    vector<string> output;
+    stringstream outputStream;
+    copy(oKeys.begin(), oKeys.end(), ostream_iterator<string>(outputStream, ","));
+    output.push_back(outputStream.str());
+
+    // Children node
+    if (!IsLeaf()) {
+        long size = outputStream.str().size();
+        string padding(" ", size);
+
+        for (auto const& c : oChildren) {
+            vector<string> childOutput = c->Dump();
+            for (auto& co : childOutput) {
+                co = padding + co;
+            }
+        }
+    }
+
+    return output;
+}
+
 BTree::BTree(long degree)
 {
     oDegree = degree;
     oRoot = new Node(oDegree);
+    oRoot->IsLeaf(true); // First node
 }
 
 void
@@ -89,10 +116,20 @@ BTree::Insert(long key)
         // New root
         Node* newRoot = new Node(oDegree);
         newRoot->AddChild(oRoot);
+        newRoot->IsLeaf(false);
         oRoot = newRoot;
         oRoot->SplitChild(1);
         oRoot->InsertKey(key);
     }
     
     oRoot->InsertKey(key);
+}
+
+string
+BTree::Dump()
+{
+    vector<string> output = oRoot->Dump();
+    stringstream outputStream;
+    copy(output.begin(), output.end(), ostream_iterator<string>(outputStream, "\n"));
+    return outputStream.str();
 }

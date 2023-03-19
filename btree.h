@@ -19,7 +19,7 @@ public:
 
     void AddChild(Node* n) { oChildren.push_back(n); }
 
-    void SetLeaf() { oLeaf = true; }
+    void IsLeaf(bool isLeaf) { oLeaf = isLeaf; }
     bool IsLeaf() { return oLeaf; }
 
     void InsertKey(long key);
@@ -30,6 +30,8 @@ public:
     
     vector<long> ChopKeys(long idx) { return SplitVector<long>(oKeys, idx); }
     vector<Node*> ChopChildren(long idx) { return SplitVector<Node*>(oChildren, idx); }
+
+    vector<string> Dump();
 private:
     long FirstGreaterThan(long key);
     // Erase the elements(start from the index). Return the erased elements.
@@ -53,7 +55,7 @@ public:
     void Insert(long key);
     void Find(long key) {}
     void Remove(long key) {}
-    string Dump() { return string("BTree Content"); }
+    string Dump();
 
 
 private:
