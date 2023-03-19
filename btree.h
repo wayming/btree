@@ -23,13 +23,15 @@ public:
     bool IsLeaf() { return oLeaf; }
 
     void InsertKey(long key);
+    void InsertKeyToLeaves(long key);
+
     long GetKey(long idx) { return oKeys.at(idx); }
     Node* GetChild(long idx) { return oChildren.at(idx); }
     
     vector<long> ChopKeys(long idx) { return SplitVector<long>(oKeys, idx); }
     vector<Node*> ChopChildren(long idx) { return SplitVector<Node*>(oChildren, idx); }
-    long FirstGreaterThan(long key);
 private:
+    long FirstGreaterThan(long key);
     // Erase the elements(start from the index). Return the erased elements.
     template <class T>
     vector<T> SplitVector(vector<T>& source, long idx) {
@@ -55,8 +57,6 @@ public:
 
 
 private:
-    void InsertIntoFull(long key);
-    void InsertIntoNotFull(Node* curr, long key);
     Node* oRoot;
     long oDegree;  
 };

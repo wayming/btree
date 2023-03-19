@@ -28,9 +28,8 @@ Node::SplitChild(long index)
 }
 
 void
-Node::InsertKey(long key)
+Node::InsertKeyToLeaves(long key)
 {
-   
     // Double the reserved size of the vector
     if (oKeys.capacity() <= oKeys.size() + 1) {
         oKeys.reserve(2 * oKeys.capacity());
@@ -42,6 +41,29 @@ Node::InsertKey(long key)
     }
  
     oKeys.insert(iter, key);
+}
+
+void
+Node::InsertKey(long key)
+{
+    if (IsLeaf()) {
+        // Assumes not full. The full leaf nodes should have ben split when visiting the parent
+        InsertKeyToLeaves(key);
+    } else {
+        // Intermidiate node
+        long idx = FirstGreaterThan(key);
+        if (GetChild(idx)->GetNumOfKeys() >= 2 * oDegree - 1) {
+            SplitChild(key);
+        }
+
+        if (key > GetKey(idx)) {
+            // Insert into right subtree
+            GetChild(idx+1)->InsertKey(key);
+        } else {
+            // Insert into left subtree
+            GetChild(idx)->InsertKey(key);
+        }
+    }
 }
 
 long
@@ -68,37 +90,9 @@ BTree::Insert(long key)
         Node* newRoot = new Node(oDegree);
         newRoot->AddChild(oRoot);
         oRoot = newRoot;
-        InsertIntoFull(key);
-    } else {
-        InsertIntoNotFull(oRoot, key);
+        oRoot->SplitChild(1);
+        oRoot->InsertKey(key);
     }
-}
-
-void
-BTree::InsertIntoFull(long key)
-{
-
-}
-
-void
-BTree::InsertIntoNotFull(Node* curr, long key)
-{
-    if (curr->IsLeaf()) {
-        curr->InsertKey(key);
-    } else {
-        // Intermidiate node
-        long idx = curr->FirstGreaterThan(key);
-        if (curr->GetChild(idx)->GetNumOfKeys() >= 2 * oDegree - 1) {
-            curr->SplitChild(key);
-        }
-
-        if (key > curr->GetKey(idx)) {
-            // Insert into right subtree
-            InsertIntoNotFull(curr->GetChild(idx+1), key);
-        } else {
-            // Insert into left subtree
-            InsertIntoNotFull(curr->GetChild(idx), key);
-        }
-    }
-
+    
+    oRoot->InsertKey(key);
 }
