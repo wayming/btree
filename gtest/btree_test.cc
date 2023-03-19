@@ -6,7 +6,7 @@ using ::testing::InitGoogleTest;
 namespace {
 TEST(Btree, Sanity) {
     BTree t(5);
-    ASSERT_TRUE(t.Dump().size() > 0);
+    ASSERT_TRUE(t.Export().size() > 0);
 }
 
 }

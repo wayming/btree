@@ -79,11 +79,11 @@ Node::FirstGreaterThan(long key)
 }
 
 vector<string>
-Node::Dump()
+Node::Export()
 {
     vector<string> output;
     stringstream outputStream;
-    copy(oKeys.begin(), oKeys.end(), ostream_iterator<string>(outputStream, ","));
+    copy(oKeys.begin(), oKeys.end(), ostream_iterator<long>(outputStream, ","));
     output.push_back(outputStream.str());
 
     // Children node
@@ -92,7 +92,7 @@ Node::Dump()
         string padding(" ", size);
 
         for (auto const& c : oChildren) {
-            vector<string> childOutput = c->Dump();
+            vector<string> childOutput = c->Export();
             for (auto& co : childOutput) {
                 co = padding + co;
             }
@@ -126,9 +126,9 @@ BTree::Insert(long key)
 }
 
 string
-BTree::Dump()
+BTree::Export()
 {
-    vector<string> output = oRoot->Dump();
+    vector<string> output = oRoot->Export();
     stringstream outputStream;
     copy(output.begin(), output.end(), ostream_iterator<string>(outputStream, "\n"));
     return outputStream.str();
