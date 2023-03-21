@@ -1,7 +1,24 @@
 #include <vector>
 #include <string>
+#include <iostream>
 
 using namespace std;
+
+
+class Logger {
+public:
+    Logger(string funName) : oFunName(funName) { cout << "> " << oFunName << endl; }
+    ~Logger() { cout << "< " << oFunName << endl; }
+    Logger(const Logger& l) = delete;
+    Logger(Logger&& l) = delete;
+    Logger& operator =(const Logger& l) = delete;
+    Logger& operator =(Logger&& l) = delete;
+
+    template<typename T> 
+    Logger& operator<< (const T& data) { cout << data << endl; return *this; }
+private:
+    string oFunName;
+};
 
 class Node {
 public:
@@ -32,6 +49,14 @@ public:
     vector<Node*> ChopChildren(long idx) { return SplitVector<Node*>(oChildren, idx); }
 
     vector<string> Export();
+
+    friend ostream& operator << (ostream& s, const Node& n)
+    {
+        for (auto key : n.oKeys) {
+            s << key << ",";
+        }
+        return s;
+    }
 private:
     long FirstChildIdxGreaterThanKey(long key);
     // Erase the elements(start from the index). Return the erased elements.
@@ -51,6 +76,10 @@ class BTree {
 public:
     BTree(long degree);
     ~BTree() { /* Destroy nodes */}
+    BTree(const BTree& t) = delete;
+    BTree(BTree&& t) = delete;
+    BTree& operator =(const BTree& t) = delete;
+    BTree& operator =(BTree&& t) = delete;
 
     void Insert(long key);
     void Find(long key) {}

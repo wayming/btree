@@ -15,7 +15,9 @@ Node::Node(long degree, vector<long> keys, vector<Node*> children)
 void
 Node::SplitChild(long index)
 {
+    Logger log("SplitChild");
     Node* childLeft = GetChild(index);
+    log << *childLeft;
 
     // Construct right child
     vector<long> keys = childLeft->ChopKeys(index);
@@ -123,7 +125,7 @@ BTree::Insert(long key)
         newRoot->AddChild(oRoot);
         newRoot->IsLeaf(false);
         oRoot = newRoot;
-        oRoot->SplitChild(1);
+        oRoot->SplitChild(0);
         oRoot->InsertKey(key);
     }
     
