@@ -33,7 +33,7 @@ public:
 
     vector<string> Export();
 private:
-    long FirstGreaterThan(long key);
+    long FirstChildIdxGreaterThanKey(long key);
     // Erase the elements(start from the index). Return the erased elements.
     template <class T>
     vector<T> SplitVector(vector<T>& source, long idx) {

@@ -5,7 +5,11 @@ using ::testing::InitGoogleTest;
 
 namespace {
 TEST(Btree, Sanity) {
-    BTree t(5);
+    BTree t(3);
+    for (auto i = 0; i < 10; i++) {
+        t.Insert(i);
+        cout << t.Export() << endl;
+    }
     ASSERT_TRUE(t.Export().size() > 0);
 }
 

@@ -37,7 +37,7 @@ Node::InsertKeyToLeaves(long key)
     }
 
     vector<long>::iterator iter = oKeys.begin();    
-    while (key > *iter) {
+    while (iter != oKeys.end() && key > *iter) {
         iter++;
     }
  
@@ -51,8 +51,8 @@ Node::InsertKey(long key)
         // Assumes not full. The full leaf nodes should have ben split when visiting the parent
         InsertKeyToLeaves(key);
     } else {
-        // Intermidiate node
-        long idx = FirstGreaterThan(key);
+        // Intermidiate or root node
+        long idx = FirstChildIdxGreaterThanKey(key);
         if (GetChild(idx)->GetNumOfKeys() >= 2 * oDegree - 1) {
             SplitChild(key);
         }
@@ -67,11 +67,16 @@ Node::InsertKey(long key)
     }
 }
 
+// Retrun the index of first child that has the keys
+// greater than the specified key.
 long
-Node::FirstGreaterThan(long key)
+Node::FirstChildIdxGreaterThanKey(long key)
 {
     long idx = 0;
-    while (key >= oKeys.at(idx)) {
+    for (auto currKey : oKeys) {
+        if (currKey >= key) {
+            break;
+        }
         idx++;
     }
 
@@ -106,7 +111,7 @@ BTree::BTree(long degree)
 {
     oDegree = degree;
     oRoot = new Node(oDegree);
-    oRoot->IsLeaf(true); // First node
+    oRoot->IsLeaf(true);
 }
 
 void
