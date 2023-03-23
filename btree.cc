@@ -13,21 +13,33 @@ Node::Node(long degree, vector<long> keys, vector<Node*> children)
 }
 
 void
-Node::SplitChild(long index)
+Node::SplitChild(long key)
 {
-    Logger log("SplitChild");
-    Node* childLeft = GetChild(index);
-    log << *childLeft;
+    Logger log(string("SplitChild key=") + to_string(key));
+    Node* childLeft = GetChild(key);
 
-    // Construct right child
-    vector<long> keys = childLeft->ChopKeys(index);
+    // split keys
+    int parentKeyPos = childLeft->GetNumOfKeys()/2;
+    vector<long> keys = childLeft->ChopKeys(parentKeyPos);
+    log << "childLeft:" << *childLeft << endl;
+    
     long parentKey = keys.front();
+    log << "parentKey=" << parentKey << endl;
     keys.erase(keys.begin());
-    vector<Node*> children = childLeft->ChopChildren(index);
+
+    // Split child nodes
+    vector<Node*> children;
+    if (!childLeft->IsLeaf()) {
+        children = childLeft->ChopChildren(parentKeyPos);
+    }
     Node* childRight = new Node(oDegree, move(keys), move(children));
     childRight->IsLeaf(childLeft->IsLeaf());
-    InsertKey(parentKey);
-    oChildren.insert(oChildren.begin()+index+1, childRight);
+    log << "childRight:" << *childRight << endl;
+
+    long idx = FirstChildIdxGreaterThanKey(key);
+    oKeys.insert(oKeys.begin()+idx, parentKey);
+    oChildren.insert(oChildren.begin()+idx+1, childRight);
+    log << "Parent:" << *this << endl;
 }
 
 void
@@ -49,12 +61,15 @@ Node::InsertKeyToLeaves(long key)
 void
 Node::InsertKey(long key)
 {
+    Logger log(string("InsertKey key=") + to_string(key));
+
     if (IsLeaf()) {
         // Assumes not full. The full leaf nodes should have ben split when visiting the parent
         InsertKeyToLeaves(key);
     } else {
         // Intermidiate or root node
         long idx = FirstChildIdxGreaterThanKey(key);
+        log << "idx=" << idx << endl;
         if (GetChild(idx)->GetNumOfKeys() >= 2 * oDegree - 1) {
             SplitChild(key);
         }
@@ -126,7 +141,6 @@ BTree::Insert(long key)
         newRoot->IsLeaf(false);
         oRoot = newRoot;
         oRoot->SplitChild(0);
-        oRoot->InsertKey(key);
     }
     
     oRoot->InsertKey(key);

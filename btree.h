@@ -15,7 +15,23 @@ public:
     Logger& operator =(Logger&& l) = delete;
 
     template<typename T> 
-    Logger& operator<< (const T& data) { cout << data << endl; return *this; }
+    Logger& operator<< (const T& data) { cout << data; return *this; }
+
+    // this is the type of std::cout
+    typedef std::basic_ostream<char, std::char_traits<char> > CoutType;
+
+    // this is the function signature of std::endl
+    typedef CoutType& (*StandardEndLine)(CoutType&);
+
+    // define an operator<< to take in std::endl
+    Logger& operator<<(StandardEndLine manip)
+    {
+        // call the function, but we cannot return it's value
+        manip(std::cout);
+
+        return *this;
+    }
+
 private:
     string oFunName;
 };
@@ -31,8 +47,8 @@ public:
     Node& operator =(Node&& n) = delete;
 
     void SplitChild(long key);
-    long GetNumOfKeys() { return oKeys.size(); }
-    long GetNumOfChildren() { return oChildren.size(); }
+    long GetNumOfKeys() const { return oKeys.size(); }
+    long GetNumOfChildren() const { return oChildren.size(); }
 
     void AddChild(Node* n) { oChildren.push_back(n); }
 
@@ -52,14 +68,16 @@ public:
 
     friend ostream& operator << (ostream& s, const Node& n)
     {
+        s << "keys=";
         for (auto key : n.oKeys) {
             s << key << ",";
         }
+        s << "#children=" << n.GetNumOfChildren();
         return s;
     }
 private:
     long FirstChildIdxGreaterThanKey(long key);
-    // Erase the elements(start from the index). Return the erased elements.
+    // Erase the elements that start from the index. Return the erased elements.
     template <class T>
     vector<T> SplitVector(vector<T>& source, long idx) {
         vector<T> remaining(source.begin()+idx, source.end());
