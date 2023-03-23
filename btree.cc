@@ -65,6 +65,7 @@ Node::InsertKey(long key)
 
     if (IsLeaf()) {
         // Assumes not full. The full leaf nodes should have ben split when visiting the parent
+        log << "Insert into leaves" << endl;
         InsertKeyToLeaves(key);
     } else {
         // Intermidiate or root node
@@ -76,6 +77,12 @@ Node::InsertKey(long key)
 
         if (key > GetKey(idx)) {
             // Insert into right subtree
+            if (GetNumOfChildren() < idx + 1) {
+                Node* newLeaf = new Node(oDegree);
+                newLeaf->IsLeaf(true);
+                oChildren.push_back(newLeaf);
+                log << "add new leaf" << endl;
+            }
             GetChild(idx+1)->InsertKey(key);
         } else {
             // Insert into left subtree
