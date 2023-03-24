@@ -60,6 +60,7 @@ public:
 
     long GetKey(long idx) { return oKeys.at(idx); }
     Node* GetChild(long idx) { return oChildren.at(idx); }
+    Node* GetChildByKey(long key);
     
     vector<long> ChopKeys(long idx) { return SplitVector<long>(oKeys, idx); }
     vector<Node*> ChopChildren(long idx) { return SplitVector<Node*>(oChildren, idx); }

@@ -57,6 +57,19 @@ Node::InsertKeyToLeaves(long key)
  
     oKeys.insert(iter, key);
 }
+Node*
+Node::GetChildByKey(long key)
+{
+    Logger log(string("GetChildByKey key=") + to_string(key));
+
+    if (key > oKeys.back()) {
+        return oChildren.back();
+    } else {
+        long idx = FirstChildIdxGreaterThanKey(key);
+        log << "idx=" << idx << endl;
+        return GetChild(idx);
+    }
+}
 
 void
 Node::InsertKey(long key)
@@ -69,25 +82,13 @@ Node::InsertKey(long key)
         InsertKeyToLeaves(key);
     } else {
         // Intermidiate or root node
-        long idx = FirstChildIdxGreaterThanKey(key);
-        log << "idx=" << idx << endl;
-        if (GetChild(idx)->GetNumOfKeys() >= 2 * oDegree - 1) {
+        Node* child = GetChildByKey(key);
+        if (child->GetNumOfKeys() >= 2 * oDegree - 1) {
             SplitChild(key);
         }
 
-        if (key > GetKey(idx)) {
-            // Insert into right subtree
-            if (GetNumOfChildren() < idx + 1) {
-                Node* newLeaf = new Node(oDegree);
-                newLeaf->IsLeaf(true);
-                oChildren.push_back(newLeaf);
-                log << "add new leaf" << endl;
-            }
-            GetChild(idx+1)->InsertKey(key);
-        } else {
-            // Insert into left subtree
-            GetChild(idx)->InsertKey(key);
-        }
+        // Key value of at the index position may have changed
+        GetChildByKey(key)->InsertKey(key);
     }
 }
 
@@ -125,6 +126,7 @@ Node::Export()
             for (auto& co : childOutput) {
                 co = padding + co;
             }
+            output.insert(end(output), begin(childOutput), end(childOutput));
         }
     }
 
