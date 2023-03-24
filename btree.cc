@@ -16,7 +16,7 @@ void
 Node::SplitChild(long key)
 {
     Logger log(string("SplitChild key=") + to_string(key));
-    Node* childLeft = GetChild(key);
+    Node* childLeft = GetChildByKey(key);
 
     // split keys
     int parentKeyPos = childLeft->GetNumOfKeys()/2;
@@ -62,7 +62,10 @@ Node::GetChildByKey(long key)
 {
     Logger log(string("GetChildByKey key=") + to_string(key));
 
-    if (key > oKeys.back()) {
+    if (GetNumOfKeys() == 0 && GetNumOfChildren() > 0) {
+        // No keys, return the first child, this can be the case when a new root is created
+        return oChildren.front();
+    } else if (key > oKeys.back()) {
         return oChildren.back();
     } else {
         long idx = FirstChildIdxGreaterThanKey(key);
@@ -118,8 +121,7 @@ Node::Export()
 
     // Children node
     if (!IsLeaf()) {
-        long size = outputStream.str().size();
-        string padding(" ", size);
+        string padding("-", 2);
 
         for (auto const& c : oChildren) {
             vector<string> childOutput = c->Export();
@@ -146,10 +148,11 @@ BTree::Insert(long key)
     if (oRoot->GetNumOfKeys() >= 2 * oDegree - 1) {
         // New root
         Node* newRoot = new Node(oDegree);
-        newRoot->AddChild(oRoot);
+        Node* child = oRoot;
+        newRoot->AddChild(child);
         newRoot->IsLeaf(false);
         oRoot = newRoot;
-        oRoot->SplitChild(0);
+        oRoot->SplitChild(0);// Specified key is ignored
     }
     
     oRoot->InsertKey(key);

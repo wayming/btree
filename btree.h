@@ -104,7 +104,7 @@ public:
     void Find(long key) {}
     void Remove(long key) {}
     string Export();
-
+    Node* Root() { return oRoot; }
 
 private:
     Node* oRoot;
