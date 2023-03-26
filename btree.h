@@ -63,6 +63,8 @@ public:
     Node* GetChildByKey(long key);
     
     vector<long> ChopKeys(long idx) { return SplitVector<long>(oKeys, idx); }
+    // Chop the children vector at the specified position.
+    // Return the removed vector starting from the specified position.
     vector<Node*> ChopChildren(long idx) { return SplitVector<Node*>(oChildren, idx); }
 
     vector<string> Export();
