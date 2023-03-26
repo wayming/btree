@@ -30,7 +30,7 @@ Node::SplitChild(long key)
     // Split child nodes
     vector<Node*> children;
     if (!childLeft->IsLeaf()) {
-        children = childLeft->ChopChildren(parentKeyPos);
+        children = childLeft->ChopChildren(parentKeyPos+1);
     }
     Node* childRight = new Node(oDegree, move(keys), move(children));
     childRight->IsLeaf(childLeft->IsLeaf());
@@ -121,7 +121,7 @@ Node::Export()
 
     // Children node
     if (!IsLeaf()) {
-        string padding("-", 2);
+        string padding("--", 2);
 
         for (auto const& c : oChildren) {
             vector<string> childOutput = c->Export();

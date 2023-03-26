@@ -5,8 +5,8 @@ using ::testing::InitGoogleTest;
 
 namespace {
 TEST(Btree, Sanity) {
-    BTree t(3);
-    for (auto i = 0; i < 100; i++) {
+    BTree t(50);
+    for (auto i = 0; i < 1000; i++) {
         t.Insert(i);
         cout << t.Export() << endl;
     }
